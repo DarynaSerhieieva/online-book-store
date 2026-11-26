@@ -1,22 +1,18 @@
 package online.book.store.repository;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import online.book.store.model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
-    private SessionFactory sessionFactory;
-
-    @Autowired
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    private final SessionFactory sessionFactory;
 
     @Override
     public Book save(Book book) {
@@ -34,7 +30,6 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-
             throw new RuntimeException("Can't insert book: " + book, e);
         } finally {
             if (session != null) {
@@ -47,10 +42,8 @@ public class BookRepositoryImpl implements BookRepository {
     public List<Book> findAll() {
         try (Session session = sessionFactory.openSession()) {
             Query<Book> query = session.createQuery("FROM Book b ", Book.class);
-
             return query.getResultList();
         } catch (Exception e) {
-
             throw new RuntimeException("Can't get all books from db", e);
         }
     }
