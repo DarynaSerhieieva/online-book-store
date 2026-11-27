@@ -1,6 +1,7 @@
 package online.book.store.repository;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import online.book.store.model.Book;
 import org.hibernate.Session;
@@ -35,6 +36,15 @@ public class BookRepositoryImpl implements BookRepository {
             if (session != null) {
                 session.close();
             }
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.find(Book.class, id));
+        } catch (Exception e) {
+            throw new RuntimeException("Can't get book by id: " + id, e);
         }
     }
 
